@@ -64,7 +64,7 @@ table {
     /* Font */
     font-family: 'Roboto', sans-serif;
     --main-font: 'Roboto', sans-serif;
-    --large-font-size: 1.3rem;
+    --large-font-size: 1.5rem;
     --title-font-size: 3rem;
     --med-font-size: 1rem;
 }
@@ -75,6 +75,10 @@ table {
     color: var(--background-color2); 
 }
 
+/* --------------------------------------- */
+/* ----------------- BODY ---------------- */
+/* --------------------------------------- */
+
 body {
     width: 100vw;
     min-height: 100vh;
@@ -83,41 +87,86 @@ body {
     display: grid;
     grid-template: 1fr / 3fr 1fr; 
     grid-template-areas:
-      "main info-pane"
+      "books info-pane"
 }
 
-/* ---------------------- */
-/* ELEMENTS DEFAULT LOOKS */
-/* ---------------------- */
+/* --------------------------------------- */
+/* ---------------- BOOKS ---------------- */
+/* --------------------------------------- */
 
-button {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: var(--background-color2); 
+#books-div {
+    grid-area: books;
+    background-color: var(--background-color);
+    padding: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: row;
+    gap: 20px;
+}
+
+/* ---- */
+/* BOOK */
+/* ---- */
+
+.book-div {
+    height: 200px;
+    width: 300px;
+    background-color: var(--background-color); 
     color: var(--dark);
-    border: 3px solid var(--dark); 
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    cursor: pointer;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    border: 3px solid var(--dark);
+    padding: 10px;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    display: grid;
+    grid-template: 4fr 1fr / 4fr 2fr; 
+    grid-template-areas:
+    "book-info-div    book-info-div  "
+    "book-buttons         toggle     "
+
+    
 }
   
-button:hover {
+.book-div:hover {
     background-color: var(--background-color); /* Change background color on hover */
     box-shadow: 4px 4px 2px var(--dark);
 }
 
-/* --------------------------------------- */
-/* ----------------- MAIN ---------------- */
-/* --------------------------------------- */
+/* Book Info */
 
-#main-div {
-    grid-area: main;
-    background-color: var(--background-color);
-    padding: 50px;
+.book-info-div {
+    grid-area: book-info-div;
 }
+
+.book-info > h3 {
+    font-size: var(--med-font-size);
+}
+
+.book-info-div > .book-title {
+    font-size: var(--large-font-size);
+    margin-bottom: 8px;
+}
+
+/* Book Buttons */
+
+.book-buttons-div {
+    grid-area: book-buttons;
+}
+
+.book-button {
+    cursor: pointer;
+}
+
+/* Book Toggle */
+
+.book-read-toggle-div {
+    grid-area: toggle;
+    position: relative;
+}
+
+.book-read-toggle-div > label {
+    position: absolute;
+    right: 0;
+}
+
 
 /* --------------------------------------- */
 /* -------------- INFO-PANE -------------- */
@@ -173,3 +222,99 @@ button:hover {
     justify-content: center;
 }
 
+
+
+/* --------------------------------------- */
+/* -------- DEFAULT ELEMENT LOOKS -------- */
+/* --------------------------------------- */
+
+/* ------ */
+/* BUTTON */
+/* ------ */
+
+button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: var(--background-color2); 
+    color: var(--dark);
+    border: 3px solid var(--dark); 
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+  
+button:hover {
+    background-color: var(--background-color); /* Change background color on hover */
+    box-shadow: 4px 4px 2px var(--dark);
+}
+
+/* ------------- */
+/* TOGGLE BUTTON */
+/* ------------- */
+
+/* From: https://www.w3schools.com/howto/howto_css_switch.asp*/
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--highlights);
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: var(--background-color2);
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px var(--background-color2);
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
