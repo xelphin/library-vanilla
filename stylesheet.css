@@ -64,19 +64,49 @@ table {
     /* Font */
     font-family: 'Roboto', sans-serif;
     --main-font: 'Roboto', sans-serif;
-    --large-font: 1.3rem;
-    --title-font: 2rem;
-    --med-font: 1rem;
+    --large-font-size: 1.3rem;
+    --title-font-size: 3rem;
+    --med-font-size: 1rem;
+}
+
+::selection {
+    /* text highlight costumization */
+    background-color: var(--highlights); 
+    color: var(--background-color2); 
 }
 
 body {
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     background-color: var(--background-color);
+    color: var(--dark);
     display: grid;
     grid-template: 1fr / 3fr 1fr; 
     grid-template-areas:
-      "main info"
+      "main info-pane"
+}
+
+/* ---------------------- */
+/* ELEMENTS DEFAULT LOOKS */
+/* ---------------------- */
+
+button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: var(--background-color2); 
+    color: var(--dark);
+    border: 3px solid var(--dark); 
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+  
+button:hover {
+    background-color: var(--background-color); /* Change background color on hover */
+    box-shadow: 4px 4px 2px var(--dark);
 }
 
 /* --------------------------------------- */
@@ -84,13 +114,62 @@ body {
 /* --------------------------------------- */
 
 #main-div {
+    grid-area: main;
     background-color: var(--background-color);
+    padding: 50px;
 }
 
 /* --------------------------------------- */
-/* ----------------- INFO ---------------- */
+/* -------------- INFO-PANE -------------- */
 /* --------------------------------------- */
+
+#info-pane-div {
+    grid-area: info-pane;
+    background-color: var(--background-color2);
+    position: sticky;
+    padding: 0 20%;
+    display: grid;
+    grid-template: 1fr 5fr 1fr/ 1fr; 
+    grid-template-areas:
+      "."
+      "info"
+      "add"
+}
+
+/* ---- */
+/* INFO */
+/* ---- */
 
 #info-div {
-    background-color: var(--background-color2);
+    grid-area: info;
+    display: flex;
+    justify-content:start;
+    flex-direction: column;
+    align-items: left;
+    
 }
+
+#title {
+    align-self: center;
+    margin-bottom: 20px;
+    font-size: var(--title-font-size);
+}
+.info-line {
+    margin: 10px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+
+/* --- */
+/* ADD */
+/* --- */
+
+#add-book-div {
+    grid-area: add;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
