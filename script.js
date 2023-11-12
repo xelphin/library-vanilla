@@ -3,10 +3,20 @@
 // --------------------------------------------
 
 let dom_booksDiv = document.querySelector('#books-div');
+// Library Info Pane
+let dom_amountBooks = document.querySelector('#amount-books');
+let dom_amountBooksFinished = document.querySelector('#amount-books-finished');
+let dom_pagesRead = document.querySelector('#amount-pages-read');
 
 // --------------------------------------------
 //                 BOOKS INIT
 // --------------------------------------------
+
+// Info
+
+let g_amountBooks = 0;
+let g_amountBooksFinished = 0;
+let g_pagesRead = 12;
 
 // BOOK
 
@@ -34,8 +44,39 @@ booksArr.push(demo_book2);
 console.log(booksArr);
 
 // --------------------------------------------
+//              EDIT LIBRARY INFO
+// --------------------------------------------
+
+function setToZeroAllInfo() {
+    g_amountBooks = 0;
+    g_amountBooksFinished = 0;
+    g_pagesRead = 0;
+    dom_amountBooks.textContent = "0";
+    dom_amountBooksFinished.textContent = "0";
+    dom_pagesRead.textContent = "0";
+}
+
+function addToAmountBooks(amount = 1) {
+    g_amountBooks += amount;
+    dom_amountBooks.textContent = g_amountBooks.toString(10);
+}
+
+function addToAmountBooksFinished(amount = 1) {
+    g_amountBooksFinished += amount;
+    dom_amountBooksFinished.textContent = g_amountBooksFinished.toString(10);
+}
+
+
+function addToPagesRead(amount) {
+    g_pagesRead += amount;
+    dom_pagesRead.textContent = g_pagesRead.toString(10);
+}
+
+// --------------------------------------------
 //              BOOK DOM CREATION
 // --------------------------------------------
+
+// ---- HELPER
 
 function createBookInfoDiv_aux(type, text) {
     let bookInfo = document.createElement('h3');
@@ -101,6 +142,7 @@ function createBookReadToggleDiv(book) {
 }
 
 // ---- MAIN
+
 function createBookNode(book) {
     console.log("Creating Book: " + book);
     // Book Div
@@ -116,6 +158,8 @@ function createBookNode(book) {
     return bookDiv;
 }
 
+
+
 // --------------------------------------------
 //             RE-RENDER ALL BOOKS
 // --------------------------------------------
@@ -124,18 +168,22 @@ function deleteFromDomAllBooks() {
     while (dom_booksDiv.firstChild) {
         dom_booksDiv.removeChild(dom_booksDiv.firstChild);
     }
-}
-
-function populateBooks() {
-    for (let index in booksArr) {
-        let bookNode = createBookNode(booksArr[index]);
-        dom_booksDiv.appendChild(bookNode);
-    }
+    setToZeroAllInfo();
 }
 
 function reRenderAllBooks() {
     deleteFromDomAllBooks();
-    populateBooks();
+    for (let index in booksArr) {
+        let bookNode = createBookNode(booksArr[index]);
+        dom_booksDiv.appendChild(bookNode);
+        // Edit Library Info
+        addToAmountBooks();
+        if (booksArr[index].read) {
+            addToAmountBooksFinished();
+            addToPagesRead(booksArr[index].pages);
+        }
+
+    }
 }
 
 
