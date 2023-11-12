@@ -73,6 +73,18 @@ function addToPagesRead(amount) {
 }
 
 // --------------------------------------------
+//           TOGGLE'S EVENT LISTENER
+// --------------------------------------------
+
+function toggleSwitched(event, pages) {
+    console.log("Toggled");
+    let mult;
+    event.target.checked ? mult =1 : mult = -1;
+    addToAmountBooksFinished(mult);
+    addToPagesRead(mult*pages);
+}
+
+// --------------------------------------------
 //              BOOK DOM CREATION
 // --------------------------------------------
 
@@ -130,6 +142,7 @@ function createBookReadToggleDiv(book) {
     if (book.read) {
         input.setAttribute('checked', 'false');
     }
+    input.addEventListener("click", (event) => toggleSwitched(event, book.pages) );
     // Toggle Span
     let span = document.createElement('span');
     span.className = 'slider round';
@@ -192,3 +205,7 @@ function reRenderAllBooks() {
 // --------------------------------------------
 
 reRenderAllBooks();
+
+
+
+
