@@ -86,7 +86,7 @@ function addToPagesRead(amount) {
 }
 
 // --------------------------------------------
-//           TOGGLE'S EVENT LISTENER
+//           BOOK'S EVENT LISTENERS
 // --------------------------------------------
 
 function toggleSwitched(event, pages) {
@@ -96,6 +96,19 @@ function toggleSwitched(event, pages) {
     addToPagesRead(mult*pages);
 }
 
+function eraseBook(event, bookData) {
+    console.log("erase event: ", event);
+    let book = event.target.closest('.book-div');
+    console.log("need to erase book: ", book);
+    if (book) {
+        addToAmountBooks(-1);
+        if (bookData.read) {
+            addToAmountBooksFinished(-1);
+            addToPagesRead(-Number(bookData.pages));
+        }
+        book.parentNode.removeChild(book);
+    }
+}
 
 
 // --------------------------------------------
@@ -134,13 +147,16 @@ function createBookButtons_aux(name) {
     return bookButton;
 }
 
-function createBookButtons() {
+function createBookButtons(book) {
     let bookButtonsDiv = document.createElement('div');
     bookButtonsDiv.className = 'book-buttons-div';
     // Book Button Erase
-    bookButtonsDiv.appendChild(createBookButtons_aux("erase"));
+    let eraseNode = createBookButtons_aux("erase");
+    eraseNode.addEventListener("click", (event) => eraseBook(event, book) );
+    bookButtonsDiv.appendChild(eraseNode);
     // Book Button Edit
-    bookButtonsDiv.appendChild(createBookButtons_aux("edit"));
+    let editNode = createBookButtons_aux("edit");
+    bookButtonsDiv.appendChild(editNode);
     // Return
     return bookButtonsDiv;
 }
@@ -180,7 +196,7 @@ function createBookNode(book) {
     // Append: Book Info Div
     bookDiv.appendChild(createBookInfoDiv(book));
     // Append: Book Buttons Div
-    bookDiv.appendChild(createBookButtons());
+    bookDiv.appendChild(createBookButtons(book));
     // Append: Book Read Toggle Div
     bookDiv.appendChild(createBookReadToggleDiv(book));
     // Return
