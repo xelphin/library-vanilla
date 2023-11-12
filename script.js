@@ -21,8 +21,24 @@ const dom_formReadInput = document.querySelector("#form-read");
 const dom_formSubmitBtn = document.querySelector("#form-submit-btn");
 const dom_formCancelBtn = document.querySelector("#form-cancel-btn");
 
+// Helper Functions
+
+// copied
+function helper_findIndexInParent(node) {
+    let parent = node.parentNode;
+    if (parent) {
+        let children = parent.childNodes;
+        for (let i = 0; i < children.length; i++) {
+            if (children[i] === node) {
+                return i;
+            }
+        }
+    }
+    return -1; // Not found
+}
+
 // --------------------------------------------
-//                 BOOKS INIT
+//                  GLOBALS
 // --------------------------------------------
 
 // Info
@@ -30,6 +46,15 @@ const dom_formCancelBtn = document.querySelector("#form-cancel-btn");
 let g_amountBooks = 0;
 let g_amountBooksFinished = 0;
 let g_pagesRead = 12;
+
+// Editing
+
+let g_editMode = false;
+let g_currBookEdit = null;
+
+// --------------------------------------------
+//                 BOOKS INIT
+// --------------------------------------------
 
 // BOOK
 
@@ -89,25 +114,44 @@ function addToPagesRead(amount) {
 //           BOOK'S EVENT LISTENERS
 // --------------------------------------------
 
-function toggleSwitched(event, pages) {
+function toggleSwitched(event) {
+    let book = event.target.closest('.book-div');
+    let indexArr = helper_findIndexInParent(book);
     let mult;
-    event.target.checked ? mult =1 : mult = -1;
+    booksArr[indexArr].read ? mult =-1 : mult = 1;
     addToAmountBooksFinished(mult);
-    addToPagesRead(mult*pages);
+    addToPagesRead(mult*Number(booksArr[indexArr].pages));
+    booksArr[indexArr].read = !booksArr[indexArr].read;
 }
 
-function eraseBook(event, bookData) {
-    console.log("erase event: ", event);
+function eraseBook(event) {
     let book = event.target.closest('.book-div');
-    console.log("need to erase book: ", book);
-    if (book) {
-        addToAmountBooks(-1);
-        if (bookData.read) {
-            addToAmountBooksFinished(-1);
-            addToPagesRead(-Number(bookData.pages));
-        }
-        book.parentNode.removeChild(book);
+    let indexArr = helper_findIndexInParent(book);
+    // console.log("books before: ", booksArr);
+    // console.log("need to erase book: ", book);
+    console.log("book data: ", booksArr[indexArr]);
+    addToAmountBooks(-1);
+    if (booksArr[indexArr].read) {
+        console.log("The book we are erasing has been read");
+        addToAmountBooksFinished(-1);
+        addToPagesRead(-Number(booksArr[indexArr].pages));
     }
+    book.parentNode.removeChild(book);
+    booksArr.splice(indexArr, 1);
+    // console.log("books left: ", booksArr);
+}
+
+function editBook(event) {
+    console.log("edit event: ", event);
+    dom_formDialog.showModal();
+    let book = event.target.closest('.book-div');
+    let indexArr = helper_findIndexInParent(book);
+    dom_formTitleInput.value = booksArr[indexArr].title;
+    dom_formAuthorInput.value = booksArr[indexArr].author;
+    dom_formPagesInput.value = booksArr[indexArr].pages;
+    dom_formReadInput.checked = booksArr[indexArr].read;
+    g_editMode = true;
+    g_currBookEdit = book;
 }
 
 
@@ -152,10 +196,11 @@ function createBookButtons(book) {
     bookButtonsDiv.className = 'book-buttons-div';
     // Book Button Erase
     let eraseNode = createBookButtons_aux("erase");
-    eraseNode.addEventListener("click", (event) => eraseBook(event, book) );
+    eraseNode.addEventListener("click", (event) => eraseBook(event) );
     bookButtonsDiv.appendChild(eraseNode);
     // Book Button Edit
     let editNode = createBookButtons_aux("edit");
+    editNode.addEventListener("click", (event) => editBook(event) );
     bookButtonsDiv.appendChild(editNode);
     // Return
     return bookButtonsDiv;
@@ -173,7 +218,7 @@ function createBookReadToggleDiv(book) {
     if (book.read) {
         input.setAttribute('checked', 'false');
     }
-    input.addEventListener("click", (event) => toggleSwitched(event, book.pages) );
+    input.addEventListener("click", (event) => toggleSwitched(event) );
     // Toggle Span
     let span = document.createElement('span');
     span.className = 'slider round';
@@ -186,7 +231,7 @@ function createBookReadToggleDiv(book) {
 }
 
 // ---- MAIN
-// Best only called from addBookToDom (because will make sure to update library info)
+// Best only called from addBookToLibrary (because will make sure to update library info)
 
 function createBookNode(book) {
     console.log("Creating Book: " + book);
@@ -218,12 +263,18 @@ function addBookToDom(book) {
     }
 }
 
+function addBookToLibrary(book) {
+    addBookToDom(book);
+    booksArr.push(book);
+}
+
 // --------------------------------------------
 //            FORM'S EVENT LISTENERS
 // --------------------------------------------
 
 dom_addBookBtn.addEventListener("click", () => {
     dom_formDialog.showModal();
+    g_editMode = false;
 });
 
 dom_formCancelBtn.addEventListener('click', (event) => {
@@ -231,6 +282,7 @@ dom_formCancelBtn.addEventListener('click', (event) => {
     dom_formTitleInput.removeAttribute("required");
     dom_formAuthorInput.removeAttribute("required");
     dom_formDialog.close();
+    g_editMode = false;
 });
 
 dom_form.addEventListener('submit', (event) => {
@@ -241,11 +293,16 @@ dom_form.addEventListener('submit', (event) => {
         let pages = dom_formPagesInput.value;
         let read = dom_formReadInput.checked;
         console.log(`title: ${title}, author: ${author}, pages: ${pages}, read: ${read}`);
-        // Create Book
-        let book = new Book(title, author, pages, read);
-        // Add Book to DOM
-        addBookToDom(book);
-        //
+
+        if (g_editMode) {
+            // EDIT EXISTING BOOK
+
+        } else {
+            // ADD NEW BOOK
+            let book = new Book(title, author, pages, read);
+            // Add Book to DOM
+            addBookToLibrary(book);
+        }
         console.log("submitted");
 
     } else {
@@ -268,7 +325,7 @@ function deleteFromDomAllBooks() {
 function reRenderAllBooks() {
     deleteFromDomAllBooks();
     for (let index in booksArr) {
-        addBookToDom(booksArr[index])
+        addBookToDom(booksArr[index]);
     }
 }
 
