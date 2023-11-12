@@ -39,6 +39,34 @@
         </div>
     </div>
 
+    <!-- FORM -->
+
+    <dialog id="form-dialog">
+        <p>Add a New Book!</p>
+        <form id = "form" method="dialog">
+            <!-- Title -->
+            <label for="form-title">The book's title:</label>
+            <input type="text" name="title" id="form-title" placeholder="title" required>
+            <br>
+            <!-- Author -->
+            <label for="form-author">The book's author:</label>
+            <input type="text" name="author" id="form-author" placeholder="author" required>
+            <br>
+            <!-- Pages -->
+            <label for="form-pages">The amount of pages in the book:</label>
+            <input type="number" name="pages" id="form-pages" min="1" required>
+            <br>
+            <!-- Read -->
+            <p>Did you read the book?</p>
+            <input type="checkbox" id="form-read" name="read" checked />
+            <br>
+            <!-- Buttons -->
+            <button id="form-cancel-btn">Cancel</button>
+            <button id="form-submit-btn" type="submit">OK</button>
+        </form>
+    </dialog>
+      
+
 
     <!-- SCRIPT -->
     <script src="./script.js" defer></script>

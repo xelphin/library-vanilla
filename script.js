@@ -8,6 +8,19 @@ let dom_amountBooks = document.querySelector('#amount-books');
 let dom_amountBooksFinished = document.querySelector('#amount-books-finished');
 let dom_pagesRead = document.querySelector('#amount-pages-read');
 
+// Add Book Button
+const dom_addBookBtn = document.querySelector("#add-book-div");
+
+// Form
+const dom_formDialog = document.querySelector("#form-dialog");
+const dom_form = document.querySelector("#form");
+const dom_formTitleInput = document.querySelector("#form-title");
+const dom_formAuthorInput = document.querySelector("#form-author");
+const dom_formPagesInput = document.querySelector("#form-pages");
+const dom_formReadInput = document.querySelector("#form-read");
+const dom_formSubmitBtn = document.querySelector("#form-submit-btn");
+const dom_formCancelBtn = document.querySelector("#form-cancel-btn");
+
 // --------------------------------------------
 //                 BOOKS INIT
 // --------------------------------------------
@@ -44,7 +57,7 @@ booksArr.push(demo_book2);
 console.log(booksArr);
 
 // --------------------------------------------
-//              EDIT LIBRARY INFO
+//         EDIT LIBRARY INFO FUNCTIONS
 // --------------------------------------------
 
 function setToZeroAllInfo() {
@@ -77,18 +90,20 @@ function addToPagesRead(amount) {
 // --------------------------------------------
 
 function toggleSwitched(event, pages) {
-    console.log("Toggled");
     let mult;
     event.target.checked ? mult =1 : mult = -1;
     addToAmountBooksFinished(mult);
     addToPagesRead(mult*pages);
 }
 
+
+
 // --------------------------------------------
 //              BOOK DOM CREATION
 // --------------------------------------------
 
-// ---- HELPER
+// ---- HELPERS
+// (Look below for the main one: createBookNode(book))
 
 function createBookInfoDiv_aux(type, text) {
     let bookInfo = document.createElement('h3');
@@ -155,6 +170,7 @@ function createBookReadToggleDiv(book) {
 }
 
 // ---- MAIN
+// Best only called from addBookToDom (because will make sure to update library info)
 
 function createBookNode(book) {
     console.log("Creating Book: " + book);
@@ -171,7 +187,56 @@ function createBookNode(book) {
     return bookDiv;
 }
 
+// --------------------------------------------
+//             ADD BOOK TO DOM
+// --------------------------------------------
 
+function addBookToDom(book) {
+    let bookNode = createBookNode(book);
+    dom_booksDiv.appendChild(bookNode);
+    // Edit Library Info
+    addToAmountBooks();
+    if (book.read) {
+        addToAmountBooksFinished();
+        addToPagesRead(Number(book.pages));
+    }
+}
+
+// --------------------------------------------
+//            FORM'S EVENT LISTENERS
+// --------------------------------------------
+
+dom_addBookBtn.addEventListener("click", () => {
+    dom_formDialog.showModal();
+});
+
+dom_formCancelBtn.addEventListener('click', (event) => {
+    console.log("cancel");
+    dom_formTitleInput.removeAttribute("required");
+    dom_formAuthorInput.removeAttribute("required");
+    dom_formDialog.close();
+});
+
+dom_form.addEventListener('submit', (event) => {
+    if (event.submitter == dom_formSubmitBtn) {
+        // Get Values
+        let title = dom_formTitleInput.value;
+        let author = dom_formAuthorInput.value;
+        let pages = dom_formPagesInput.value;
+        let read = dom_formReadInput.checked;
+        console.log(`title: ${title}, author: ${author}, pages: ${pages}, read: ${read}`);
+        // Create Book
+        let book = new Book(title, author, pages, read);
+        // Add Book to DOM
+        addBookToDom(book);
+        //
+        console.log("submitted");
+
+    } else {
+        console.log("cancelled");
+    }
+
+});
 
 // --------------------------------------------
 //             RE-RENDER ALL BOOKS
@@ -187,18 +252,9 @@ function deleteFromDomAllBooks() {
 function reRenderAllBooks() {
     deleteFromDomAllBooks();
     for (let index in booksArr) {
-        let bookNode = createBookNode(booksArr[index]);
-        dom_booksDiv.appendChild(bookNode);
-        // Edit Library Info
-        addToAmountBooks();
-        if (booksArr[index].read) {
-            addToAmountBooksFinished();
-            addToPagesRead(booksArr[index].pages);
-        }
-
+        addBookToDom(booksArr[index])
     }
 }
-
 
 // --------------------------------------------
 //                    INIT
