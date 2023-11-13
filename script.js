@@ -41,19 +41,13 @@ function helper_findIndexInParent(node) {
 //                  GLOBALS
 // --------------------------------------------
 
-// Info
-
-let g_amountBooks = 0;
-let g_amountBooksFinished = 0;
-let g_pagesRead = 12;
-
 // Editing
 
 let g_editMode = false;
 let g_currEditEvent = null;
 
 // --------------------------------------------
-//                 BOOKS INIT
+//                BOOK OBJECT
 // --------------------------------------------
 
 // BOOK
@@ -69,91 +63,140 @@ Book.prototype.getInfo = function () {
     return `title: ${this.title}, author: ${this.author}, pages: ${this.pages}, read: ${this.read}`;
 }
 
+// --------------------------------------------
+//                LIBRARY OBJECT
+// --------------------------------------------
+
+// Assumes books can have the same info (can have books with the same title and such)
+
+function Library() {
+    this.booksArr = [];
+    this.totalBooks = 0;
+    this.totalRead = 0;
+    this.totalPagesRead = 0;
+}
+
+Library.prototype.getTotalBooks = function () {
+    return this.totalBooks;
+}
+
+Library.prototype.getTotalRead = function () {
+    return this.totalRead;
+}
+Library.prototype.getTotalPagesRead = function () {
+    return this.totalPagesRead;
+}
+
+function setDomLibraryInfo(library) {
+    dom_amountBooks.textContent = library.getTotalBooks().toString(10);
+    dom_amountBooksFinished.textContent = library.getTotalRead().toString(10);
+    dom_pagesRead.textContent = library.getTotalPagesRead().toString(10);
+}
+
+Library.prototype.resetAllInfo = function () {
+    this.totalBooks = 0;
+    this.totalRead = 0;
+    this.totalPagesRead = 0;
+    setDomLibraryInfo(this);
+}
+
+Library.prototype.printBooks = function () {
+    console.log(this.booksArr);
+}
+
+Library.prototype.addBook = function (book) {
+    this.booksArr.push(book);
+    this.totalBooks++;
+    if (book.read) {
+        this.totalRead++;
+        this.totalPagesRead += Number(book.pages);
+    }
+    setDomLibraryInfo(this);
+}
+
+Library.prototype.toggleRead = function (index) {
+    if (index >= this.booksArr.length || index < 0) return;
+    let book = this.booksArr[index];
+    let mult;
+    book.read ? mult = -1 : mult = 1;
+    this.totalRead += mult;
+    this.totalPagesRead += mult*Number(book.pages);
+    this.booksArr[index].read = !this.booksArr[index].read;
+    setDomLibraryInfo(this);
+}
+
+Library.prototype.getBookAt = function (index) {
+    if (index >= this.booksArr.length || index < 0) return;
+    return this.booksArr[index];
+}
+
+Library.prototype.removeBookAt = function (index) {
+    if (index >= this.booksArr.length || index < 0) return;
+    this.totalBooks--;
+    let book = this.booksArr[index];
+    if (book.read) {
+        this.totalRead--;
+        this.totalPagesRead -= book.pages;
+    }
+    this.booksArr.splice(index, 1);
+    setDomLibraryInfo(this);
+}
+
+Library.prototype.getBooksArr = function () {
+    return this.booksArr;
+}
+
+let library = new Library();
+
+// --------------------------------------------
+//                   DEMO
+// --------------------------------------------
+
 let demo_book1 = new Book("The Catcher In The Rye", "J.D Salinger", 234, true);
 let demo_book2 = new Book("Norwegian Wood", "Haruki Murakami", 386, false);
 
-// BOOKS ARRAY
+library.addBook(demo_book1);
+library.addBook(demo_book2);
 
-let booksArr = [];
+library.printBooks();
 
-booksArr.push(demo_book1);
-booksArr.push(demo_book2);
-
-console.log(booksArr);
-
-// --------------------------------------------
-//         EDIT LIBRARY INFO FUNCTIONS
-// --------------------------------------------
-
-function setToZeroAllInfo() {
-    g_amountBooks = 0;
-    g_amountBooksFinished = 0;
-    g_pagesRead = 0;
-    dom_amountBooks.textContent = "0";
-    dom_amountBooksFinished.textContent = "0";
-    dom_pagesRead.textContent = "0";
-}
-
-function addToAmountBooks(amount = 1) {
-    g_amountBooks += amount;
-    dom_amountBooks.textContent = g_amountBooks.toString(10);
-}
-
-function addToAmountBooksFinished(amount = 1) {
-    g_amountBooksFinished += amount;
-    dom_amountBooksFinished.textContent = g_amountBooksFinished.toString(10);
-}
-
-
-function addToPagesRead(amount) {
-    g_pagesRead += amount;
-    dom_pagesRead.textContent = g_pagesRead.toString(10);
-}
 
 // --------------------------------------------
 //           BOOK'S EVENT LISTENERS
 // --------------------------------------------
 
-function toggleSwitched(event) {
+function helper_getIndexBookFromEvent(event) {
     let book = event.target.closest('.book-div');
-    let indexArr = helper_findIndexInParent(book);
-    let mult;
-    booksArr[indexArr].read ? mult =-1 : mult = 1;
-    addToAmountBooksFinished(mult);
-    addToPagesRead(mult*Number(booksArr[indexArr].pages));
-    booksArr[indexArr].read = !booksArr[indexArr].read;
+    return helper_findIndexInParent(book);
 }
 
-function eraseBook_updateLibraryInfo(indexArr) {
-    addToAmountBooks(-1);
-    if (booksArr[indexArr].read) {
-        addToAmountBooksFinished(-1);
-        addToPagesRead(-Number(booksArr[indexArr].pages));
-    }
+function toggleSwitched(event) {
+    let index = helper_getIndexBookFromEvent(event);
+    library.toggleRead(index);
 }
 
 function eraseBook(event) {
     let book = event.target.closest('.book-div');
-    let indexArr = helper_findIndexInParent(book);
-    console.log("books before: ", booksArr);
-    console.log("book old data: ", booksArr[indexArr]);
+    let index = helper_getIndexBookFromEvent(event);
+    console.log("books before: ");
+    library.printBooks();
 
-    eraseBook_updateLibraryInfo(indexArr);
-
+    library.removeBookAt(index);
     book.parentNode.removeChild(book);
-    booksArr.splice(indexArr, 1);
-    console.log("books left: ", booksArr);
+
+    console.log("books left: ");
+    library.printBooks();
 }
 
 function editBook(event) {
     console.log("editing");
     dom_formDialog.showModal();
-    let book = event.target.closest('.book-div');
-    let indexArr = helper_findIndexInParent(book);
-    dom_formTitleInput.value = booksArr[indexArr].title;
-    dom_formAuthorInput.value = booksArr[indexArr].author;
-    dom_formPagesInput.value = booksArr[indexArr].pages;
-    dom_formReadInput.checked = booksArr[indexArr].read;
+    let indexArr = helper_getIndexBookFromEvent(event);
+    let bookObj = library.getBookAt(indexArr);
+    dom_formTitleInput.value = bookObj.title;
+    dom_formAuthorInput.value = bookObj.author;
+    dom_formPagesInput.value = bookObj.pages;
+    dom_formReadInput.checked = bookObj.read;
     g_editMode = true;
     g_currEditEvent = event;
 }
@@ -256,23 +299,14 @@ function createBookNode(book) {
 //             ADD BOOK TO DOM
 // --------------------------------------------
 
-function addBook_updateLibraryInfo(book) {
-    addToAmountBooks();
-    if (book.read) {
-        addToAmountBooksFinished();
-        addToPagesRead(Number(book.pages));
-    }
-}
-
 function addBookToDom(book) {
     let bookNode = createBookNode(book);
     dom_booksDiv.appendChild(bookNode);
-    addBook_updateLibraryInfo(book);
 }
 
 function addBookToLibrary(book) {
     addBookToDom(book);
-    booksArr.push(book);
+    library.addBook(book);
 }
 
 // --------------------------------------------
@@ -326,11 +360,11 @@ function deleteFromDomAllBooks() {
     while (dom_booksDiv.firstChild) {
         dom_booksDiv.removeChild(dom_booksDiv.firstChild);
     }
-    setToZeroAllInfo();
 }
 
 function reRenderAllBooks() {
     deleteFromDomAllBooks();
+    let booksArr = library.getBooksArr();
     for (let index in booksArr) {
         addBookToDom(booksArr[index]);
     }
