@@ -100,12 +100,11 @@ body {
 /* --------------------------------------- */
 
 #books-div {
-    width: 72vw;
+    width: 71vw;
     background-color: var(--background-color);
     padding: 50px;
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
     align-content: flex-start;
     gap: 20px;
 }

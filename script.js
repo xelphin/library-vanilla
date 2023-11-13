@@ -79,35 +79,6 @@ let booksArr = [];
 booksArr.push(demo_book1);
 booksArr.push(demo_book2);
 
-// For Testing TODO: DELETE THESE
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-booksArr.push(demo_book2);
-
 console.log(booksArr);
 
 // --------------------------------------------
