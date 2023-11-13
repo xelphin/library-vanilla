@@ -127,7 +127,6 @@ function toggleSwitched(event) {
 function eraseBook_updateLibraryInfo(indexArr) {
     addToAmountBooks(-1);
     if (booksArr[indexArr].read) {
-        console.log("The book we are erasing has been read");
         addToAmountBooksFinished(-1);
         addToPagesRead(-Number(booksArr[indexArr].pages));
     }
@@ -137,7 +136,6 @@ function eraseBook(event) {
     let book = event.target.closest('.book-div');
     let indexArr = helper_findIndexInParent(book);
     console.log("books before: ", booksArr);
-    console.log("need to erase book: ", book);
     console.log("book old data: ", booksArr[indexArr]);
 
     eraseBook_updateLibraryInfo(indexArr);
@@ -148,7 +146,7 @@ function eraseBook(event) {
 }
 
 function editBook(event) {
-    console.log("edit event: ", event);
+    console.log("editing");
     dom_formDialog.showModal();
     let book = event.target.closest('.book-div');
     let indexArr = helper_findIndexInParent(book);
