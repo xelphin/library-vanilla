@@ -90,10 +90,9 @@ body {
     min-height: 100vh;
     background-color: var(--background-color);
     color: var(--dark);
-    display: grid;
-    grid-template: 1fr / 3fr 1fr; 
-    grid-template-areas:
-      "books info-pane"
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 /* --------------------------------------- */
@@ -101,12 +100,13 @@ body {
 /* --------------------------------------- */
 
 #books-div {
-    grid-area: books;
+    width: 72vw;
     background-color: var(--background-color);
     padding: 50px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: row;
+    align-items: flex-start;
+    align-content: flex-start;
     gap: 20px;
 }
 
@@ -127,8 +127,6 @@ body {
     grid-template-areas:
     "book-info-div    book-info-div  "
     "book-buttons         toggle     "
-
-    
 }
   
 .book-div:hover {
@@ -179,10 +177,19 @@ body {
 /* --------------------------------------- */
 
 #info-pane-div {
+    width: 23vw;
     grid-area: info-pane;
     background-color: var(--background-color2);
-    position: sticky;
-    padding: 0 20%;
+
+}
+
+#info-holder-div {
+    position:fixed;
+    height: 100vh;
+    top: 0;
+    width: 21vw;
+    padding: 0 4vw;
+    right: 12px;
     display: grid;
     grid-template: 1fr 5fr 1fr/ 1fr; 
     grid-template-areas:
