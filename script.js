@@ -146,6 +146,7 @@ Library.prototype.getBooksArr = function () {
     return this.booksArr;
 }
 
+// GLOBAL
 let library = new Library();
 
 // --------------------------------------------
