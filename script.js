@@ -50,7 +50,7 @@ let g_pagesRead = 12;
 // Editing
 
 let g_editMode = false;
-let g_currBookEdit = null;
+let g_currEditEvent = null;
 
 // --------------------------------------------
 //                 BOOKS INIT
@@ -124,21 +124,27 @@ function toggleSwitched(event) {
     booksArr[indexArr].read = !booksArr[indexArr].read;
 }
 
-function eraseBook(event) {
-    let book = event.target.closest('.book-div');
-    let indexArr = helper_findIndexInParent(book);
-    // console.log("books before: ", booksArr);
-    // console.log("need to erase book: ", book);
-    console.log("book data: ", booksArr[indexArr]);
+function eraseBook_updateLibraryInfo(indexArr) {
     addToAmountBooks(-1);
     if (booksArr[indexArr].read) {
         console.log("The book we are erasing has been read");
         addToAmountBooksFinished(-1);
         addToPagesRead(-Number(booksArr[indexArr].pages));
     }
+}
+
+function eraseBook(event) {
+    let book = event.target.closest('.book-div');
+    let indexArr = helper_findIndexInParent(book);
+    console.log("books before: ", booksArr);
+    console.log("need to erase book: ", book);
+    console.log("book old data: ", booksArr[indexArr]);
+
+    eraseBook_updateLibraryInfo(indexArr);
+
     book.parentNode.removeChild(book);
     booksArr.splice(indexArr, 1);
-    // console.log("books left: ", booksArr);
+    console.log("books left: ", booksArr);
 }
 
 function editBook(event) {
@@ -151,7 +157,7 @@ function editBook(event) {
     dom_formPagesInput.value = booksArr[indexArr].pages;
     dom_formReadInput.checked = booksArr[indexArr].read;
     g_editMode = true;
-    g_currBookEdit = book;
+    g_currEditEvent = event;
 }
 
 
@@ -252,15 +258,18 @@ function createBookNode(book) {
 //             ADD BOOK TO DOM
 // --------------------------------------------
 
-function addBookToDom(book) {
-    let bookNode = createBookNode(book);
-    dom_booksDiv.appendChild(bookNode);
-    // Edit Library Info
+function addBook_updateLibraryInfo(book) {
     addToAmountBooks();
     if (book.read) {
         addToAmountBooksFinished();
         addToPagesRead(Number(book.pages));
     }
+}
+
+function addBookToDom(book) {
+    let bookNode = createBookNode(book);
+    dom_booksDiv.appendChild(bookNode);
+    addBook_updateLibraryInfo(book);
 }
 
 function addBookToLibrary(book) {
@@ -293,16 +302,16 @@ dom_form.addEventListener('submit', (event) => {
         let pages = dom_formPagesInput.value;
         let read = dom_formReadInput.checked;
         console.log(`title: ${title}, author: ${author}, pages: ${pages}, read: ${read}`);
+        let book = new Book(title, author, pages, read);
 
         if (g_editMode) {
             // EDIT EXISTING BOOK
+            eraseBook(g_currEditEvent);
+        } 
 
-        } else {
-            // ADD NEW BOOK
-            let book = new Book(title, author, pages, read);
-            // Add Book to DOM
-            addBookToLibrary(book);
-        }
+        // ADD NEW BOOK
+        addBookToLibrary(book);
+        
         console.log("submitted");
 
     } else {
