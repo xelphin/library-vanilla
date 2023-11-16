@@ -76,34 +76,23 @@ class Book {
 class Library {
 
     booksArr = [];
-    totalBooks = 0;
-    totalRead = 0;
-    totalPagesRead = 0;
+    _totalBooks = 0;
+    _totalRead = 0;
+    _totalPagesRead = 0;
   
     constructor() {}
   
-    getTotalBooks = () => {
-        return this.totalBooks;
-    }
-
-    getTotalRead = () => {
-        return this.totalRead;
-    }
-
-    getTotalPagesRead = () => {
-        return this.totalPagesRead;
-    }
 
     #setDomLibraryInfo() {
-        dom_amountBooks.textContent = this.getTotalBooks().toString(10);
-        dom_amountBooksFinished.textContent = this.getTotalRead().toString(10);
-        dom_pagesRead.textContent = this.getTotalPagesRead().toString(10);
+        dom_amountBooks.textContent = this._totalBooks.toString(10);
+        dom_amountBooksFinished.textContent = this._totalRead.toString(10);
+        dom_pagesRead.textContent = this._totalPagesRead.toString(10);
     }
 
     resetAllInfo = () => {
-        this.totalBooks = 0;
-        this.totalRead = 0;
-        this.totalPagesRead = 0;
+        this._totalBooks = 0;
+        this._totalRead = 0;
+        this._totalPagesRead = 0;
         this.#setDomLibraryInfo();
     }
 
@@ -113,10 +102,10 @@ class Library {
 
     addBook = (book) => {
         this.booksArr.push(book);
-        this.totalBooks++;
+        this._totalBooks++;
         if (book.read) {
-            this.totalRead++;
-            this.totalPagesRead += Number(book.pages);
+            this._totalRead++;
+            this._totalPagesRead += Number(book.pages);
         }
         this.#setDomLibraryInfo();
     }
@@ -126,8 +115,8 @@ class Library {
         let book = this.booksArr[index];
         let mult;
         book.read ? mult = -1 : mult = 1;
-        this.totalRead += mult;
-        this.totalPagesRead += mult*Number(book.pages);
+        this._totalRead += mult;
+        this._totalPagesRead += mult*Number(book.pages);
         this.booksArr[index].read = !this.booksArr[index].read;
         this.#setDomLibraryInfo();
     }
@@ -139,17 +128,21 @@ class Library {
 
     removeBookAt = (index) => {
         if (index >= this.booksArr.length || index < 0) return;
-        this.totalBooks--;
+        this._totalBooks--;
         let book = this.booksArr[index];
         if (book.read) {
-            this.totalRead--;
-            this.totalPagesRead -= book.pages;
+            this._totalRead--;
+            this._totalPagesRead -= book.pages;
         }
         this.booksArr.splice(index, 1);
         this.#setDomLibraryInfo();
     }
 
     getBooksArr = () => {
+        return this.booksArr;
+    }
+
+    get booksArr() {
         return this.booksArr;
     }
   
@@ -375,7 +368,7 @@ function deleteFromDomAllBooks() {
 
 function reRenderAllBooks() {
     deleteFromDomAllBooks();
-    let booksArr = library.getBooksArr();
+    let booksArr = library.booksArr;
     for (let index in booksArr) {
         addBookToDom(booksArr[index]);
     }
