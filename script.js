@@ -52,15 +52,19 @@ let g_currEditEvent = null;
 
 // BOOK
 
-function Book(title, author, pages, read = false) {
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.read = read;
-}
-
-Book.prototype.getInfo = function () {
-    return `title: ${this.title}, author: ${this.author}, pages: ${this.pages}, read: ${this.read}`;
+class Book {
+  
+    constructor(title, author, pages, read = false) {
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
+    }
+  
+    getInfo = () => {
+        return `title: ${this.title}, author: ${this.author}, pages: ${this.pages}, read: ${this.read}`;
+    }
+  
 }
 
 // --------------------------------------------
@@ -69,82 +73,88 @@ Book.prototype.getInfo = function () {
 
 // Assumes books can have the same info (can have books with the same title and such)
 
-function Library() {
-    this.booksArr = [];
-    this.totalBooks = 0;
-    this.totalRead = 0;
-    this.totalPagesRead = 0;
-}
+class Library {
 
-Library.prototype.getTotalBooks = function () {
-    return this.totalBooks;
-}
-
-Library.prototype.getTotalRead = function () {
-    return this.totalRead;
-}
-Library.prototype.getTotalPagesRead = function () {
-    return this.totalPagesRead;
-}
-
-function setDomLibraryInfo(library) {
-    dom_amountBooks.textContent = library.getTotalBooks().toString(10);
-    dom_amountBooksFinished.textContent = library.getTotalRead().toString(10);
-    dom_pagesRead.textContent = library.getTotalPagesRead().toString(10);
-}
-
-Library.prototype.resetAllInfo = function () {
-    this.totalBooks = 0;
-    this.totalRead = 0;
-    this.totalPagesRead = 0;
-    setDomLibraryInfo(this);
-}
-
-Library.prototype.printBooks = function () {
-    console.log(this.booksArr);
-}
-
-Library.prototype.addBook = function (book) {
-    this.booksArr.push(book);
-    this.totalBooks++;
-    if (book.read) {
-        this.totalRead++;
-        this.totalPagesRead += Number(book.pages);
+    booksArr = [];
+    totalBooks = 0;
+    totalRead = 0;
+    totalPagesRead = 0;
+  
+    constructor() {}
+  
+    getTotalBooks = () => {
+        return this.totalBooks;
     }
-    setDomLibraryInfo(this);
-}
 
-Library.prototype.toggleRead = function (index) {
-    if (index >= this.booksArr.length || index < 0) return;
-    let book = this.booksArr[index];
-    let mult;
-    book.read ? mult = -1 : mult = 1;
-    this.totalRead += mult;
-    this.totalPagesRead += mult*Number(book.pages);
-    this.booksArr[index].read = !this.booksArr[index].read;
-    setDomLibraryInfo(this);
-}
-
-Library.prototype.getBookAt = function (index) {
-    if (index >= this.booksArr.length || index < 0) return;
-    return this.booksArr[index];
-}
-
-Library.prototype.removeBookAt = function (index) {
-    if (index >= this.booksArr.length || index < 0) return;
-    this.totalBooks--;
-    let book = this.booksArr[index];
-    if (book.read) {
-        this.totalRead--;
-        this.totalPagesRead -= book.pages;
+    getTotalRead = () => {
+        return this.totalRead;
     }
-    this.booksArr.splice(index, 1);
-    setDomLibraryInfo(this);
+
+    getTotalPagesRead = () => {
+        return this.totalPagesRead;
+    }
+
+    #setDomLibraryInfo() {
+        dom_amountBooks.textContent = this.getTotalBooks().toString(10);
+        dom_amountBooksFinished.textContent = this.getTotalRead().toString(10);
+        dom_pagesRead.textContent = this.getTotalPagesRead().toString(10);
+    }
+
+    resetAllInfo = () => {
+        this.totalBooks = 0;
+        this.totalRead = 0;
+        this.totalPagesRead = 0;
+        this.#setDomLibraryInfo();
+    }
+
+    printBooks = () => {
+        console.log(this.booksArr);
+    }
+
+    addBook = (book) => {
+        this.booksArr.push(book);
+        this.totalBooks++;
+        if (book.read) {
+            this.totalRead++;
+            this.totalPagesRead += Number(book.pages);
+        }
+        this.#setDomLibraryInfo();
+    }
+
+    toggleRead = (index) => {
+        if (index >= this.booksArr.length || index < 0) return;
+        let book = this.booksArr[index];
+        let mult;
+        book.read ? mult = -1 : mult = 1;
+        this.totalRead += mult;
+        this.totalPagesRead += mult*Number(book.pages);
+        this.booksArr[index].read = !this.booksArr[index].read;
+        this.#setDomLibraryInfo();
+    }
+
+    getBookAt = (index) => {
+        if (index >= this.booksArr.length || index < 0) return;
+        return this.booksArr[index];
+    }
+
+    removeBookAt = (index) => {
+        if (index >= this.booksArr.length || index < 0) return;
+        this.totalBooks--;
+        let book = this.booksArr[index];
+        if (book.read) {
+            this.totalRead--;
+            this.totalPagesRead -= book.pages;
+        }
+        this.booksArr.splice(index, 1);
+        this.#setDomLibraryInfo();
+    }
+
+    getBooksArr = () => {
+        return this.booksArr;
+    }
+  
 }
 
-Library.prototype.getBooksArr = function () {
-    return this.booksArr;
-}
 
 // GLOBAL
 let library = new Library();
